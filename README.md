@@ -1,37 +1,52 @@
-So basically, after 3 years of not posting anything since my last "Kernel Driver" release, I've decided to drop another method, mostly for newcomers who want to start getting into Kernel to Usermode communication.
+Here is a beautiful, professional, and structured `README.md` optimized for GitHub. It uses clear headers, syntax highlighting, alert blocks, and a clean layout.
 
-This release demonstrates a Shared Memory communication method, which is generally faster and stealthier than standard IOCTL (DeviceIoControl). To make it practical, I've included a fully functional Counter-Strike 2 Bhop example. While this technically includes a cheat feature, the main focus here is on the underlying communication architecture.
+---
 
-🚀 [B]How It Works (The "Sauce")[/B]
-Instead of using standard IOCTLs (which involve repeated syscall overhead for every read/write), this project uses a Shared Memory Section.
+# 🌉 Shared Memory Kernel Bridge + CS2 Bhop Example
 
-The Driver creates a named section in memory (\BaseNamedObjects\NiohSharedV6). -> Highly detected on good AC ( HARDCODED )
+> **A high-performance kernel-to-usermode communication proof of concept.**
 
-[LIST]
-[*]The Usermode Client maps this section into its own memory space.
-[*]Communication happens by simply writing to this memory buffer.
-[*]Client sets Status = 1 -> Driver reads memory.
-[*]Client sets Status = 3 -> Driver writes memory.
-[*]Driver resets Status = 2 -> Operation done.
-[/LIST]
+After 3 years since my last "Kernel Driver" release, I've decided to drop another method, designed primarily for newcomers who want to understand **Kernel Communication** beyond the standard methods.
+
+This project demonstrates a **Shared Memory** communication architecture. It is generally faster and stealthier than standard IOCTL (`DeviceIoControl`) methods because it eliminates repeated syscall overhead. To demonstrate its practicality, a fully functional **Counter-Strike 2 Bhop** is included.
+
+---
+
+## 🚀 How It Works (The "Sauce")
+
+Instead of using standard IOCTLs (which involve context switches and overhead for every single read/write), this project uses a **Shared Memory Section**.
+
+1. **The Driver** creates a named section in physical memory (`\BaseNamedObjects\NiohSharedV6`).
+2. **The Usermode Client** maps this section into its own virtual memory space.
+3. **Communication** happens by simply reading/writing variables in this shared buffer.
 
 This acts like a high-speed bridge where both the cheat and the driver look at the exact same piece of RAM.
 
-🛠️ [B]The Driver (main.c)[/B]
+### Communication Flow
+
+1. **Client** writes request data (PID, Address, Size) to the buffer.
+2. **Client** sets `Status = 1` (Read) or `Status = 3` (Write).
+3. **Driver** (monitoring the buffer) detects the change.
+4. **Driver** executes the memory operation via `MmCopyVirtualMemory`.
+5. **Driver** resets `Status = 2` (Done).
+
+---
+
+## 🛠️ The Driver (`Kernel.sys`)
+
 The kernel component is a system thread that loops and monitors the shared memory buffer for commands.
 
-Key Features:
+### Key Features
 
-[LIST]
-[*]Safety Checks (Anti-BSOD): Before attempting any memory operation, the driver validates the target address. It checks if the address is too small (Null Pointer protection) or too large (Kernel Space protection), preventing fatal system crashes.
+| Feature | Description |
+| --- | --- |
+| **🛡️ Anti-BSOD** | Validates addresses before access. Checks for Null Pointers (Too small) and Kernel Space (Too large) to prevent system crashes. |
+| **🔄 Dynamic PID** | Does not hardcode the game PID. It waits for the Usermode client to provide the target `ProcessId`. |
+| **⚡ MmCopyVirtualMemory** | Uses standard, safe kernel APIs to copy memory between the game process and the shared buffer. |
 
-[*]Dynamic PID: The driver doesn't hardcode the Game PID. It waits for the Usermode client to write the target ProcessId into the shared memory structure.
+### Code Breakdown
 
-[*]MmCopyVirtualMemory: Uses standard kernel APIs to safely copy memory between the game process and our shared buffer.
-[/LIST]
-
-[B]Code Breakdown:[/B]
-[CODE]
+```c
 // The driver loop monitors 'SharedMemory->Status'
 if (SharedMemory->Status == 1) {
     // READ COMMAND: Copy from Game -> Shared Buffer
@@ -40,23 +55,25 @@ if (SharedMemory->Status == 1) {
 else if (SharedMemory->Status == 3) {
     // WRITE COMMAND: Copy from Shared Buffer -> Game
     MmCopyVirtualMemory(CurrentProcess, Buffer, GameProcess, TargetAddress, Size, ...);
-}[/CODE]
+}
 
-💻[B] The Client (client.cpp)[/B]
-The usermode application acts as the "controller". It finds the game, calculates offsets, and tells the driver what to do.
+```
 
-Key Features:
+---
 
-[LIST]
-[*]Handshake Protocol: It performs a handshake (Status 99 -> 100) to ensure the driver is loaded and listening before sending any commands.
+## 💻 The Client (`Client.exe`)
 
-[*]Bhop Logic: A simple infinite loop that checks the Spacebar state and writes to the dwForceJump offset in the game memory.
+The usermode application acts as the "controller". It finds the game process, calculates offsets, and dispatches commands to the driver.
 
-[*]Robustness: Uses a template-based WriteMemory helper that handles the synchronization with the driver (waiting for the driver to acknowledge the command).
-[/LIST]
+### Key Features
 
-[B]Code Breakdown:[/B]
-[CODE]
+* **🤝 Handshake Protocol:** Performs a startup check (`Status 99` -> `100`) to ensure the driver is loaded and ready.
+* **🐰 Bhop Logic:** A simple loop that checks `Spacebar` state and writes to the `dwForceJump` offset.
+* **🧱 Robust Synchronization:** Uses a template-based helper that uses spinlocks (`_mm_pause()`) to wait for driver acknowledgement.
+
+### Code Breakdown
+
+```cpp
 // 1. Connect to the Shared Memory Section created by the driver
 HANDLE hMapFile = OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, "Global\\NiohSharedV6");
 pMem = (SHARED_MEMORY*)MapViewOfFile(hMapFile, ...);
@@ -70,6 +87,45 @@ pMem->Status = 3;
 while (pMem->Status == 3) { 
     _mm_pause(); // Spinlock until driver processes the request
 }
-[/CODE]
 
-I have provided the source code and the general steps to get started. You are expected to have the prerequisite knowledge to compile and load the driver yourself. Thanks <3
+```
+
+---
+
+## ⚠️ Security & Detection Warning
+
+> [!WARNING]
+> **READ THIS BEFORE USING ON MAIN ACCOUNTS**
+> The driver currently creates a **Named Section** (`\BaseNamedObjects\NiohSharedV6`).
+> * **Detection Risk:** High. Good Anti-Cheats (EAC, BattlEye, Vanguard) scan the Object Directory. A hardcoded name like this is a "signature" and allows them to easily flag the driver.
+> * **Recommendation:** For use in a secured environment, you must **randomize the name** or implement **unnamed (anonymous) memory mapping**.
+> 
+> 
+
+---
+
+## 📦 How to Use
+
+I have provided the source code and the general steps. You are expected to have the prerequisite knowledge to compile and load the driver yourself.
+
+1. **Compile the Driver:** Build `Kernel.sys` (Release x64).
+2. **Load the Driver:**
+* *Method A:* Use a manual mapper (e.g., `kdmapper`).
+* *Method B:* Enable Test Signing and use `sc start` (Not recommended for AC).
+
+
+3. **Update Offsets:** Check `client.cpp` and update `dwForceJump` for the latest CS2 patch.
+4. **Run Client:** Launch CS2, then run `Client.exe` as Administrator.
+
+---
+
+## 📜 Disclaimer & Credits
+
+**Disclaimer:** This software is for **educational purposes only**. The author is not responsible for any bans or damages caused by the use of this software.
+
+**Credits:**
+
+* **Me** - Logic & Implementation
+* **UnknownCheats** - For the endless resources
+
+<p align="center">Made with ❤️ for the community</p>
