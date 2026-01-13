@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36811.4
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "topg driver", "topg driver\topg driver.vcxproj", "{C72BE53C-496D-6871-3297-CC68C301B8F5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "topg usermode", "topg usermode\topg usermode.vcxproj", "{3A3E6550-9522-4E6D-9904-1365185D3F01}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM64 = Debug|ARM64
+		Debug|x64 = Debug|x64
+		Release|ARM64 = Release|ARM64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Debug|ARM64.Build.0 = Debug|ARM64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Debug|ARM64.Deploy.0 = Debug|ARM64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Debug|x64.ActiveCfg = Debug|x64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Debug|x64.Build.0 = Debug|x64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Debug|x64.Deploy.0 = Debug|x64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Release|ARM64.ActiveCfg = Release|ARM64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Release|ARM64.Build.0 = Release|ARM64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Release|ARM64.Deploy.0 = Release|ARM64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Release|x64.ActiveCfg = Release|x64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Release|x64.Build.0 = Release|x64
+		{C72BE53C-496D-6871-3297-CC68C301B8F5}.Release|x64.Deploy.0 = Release|x64
+		{3A3E6550-9522-4E6D-9904-1365185D3F01}.Debug|ARM64.ActiveCfg = Debug|x64
+		{3A3E6550-9522-4E6D-9904-1365185D3F01}.Debug|ARM64.Build.0 = Debug|x64
+		{3A3E6550-9522-4E6D-9904-1365185D3F01}.Debug|x64.ActiveCfg = Debug|x64
+		{3A3E6550-9522-4E6D-9904-1365185D3F01}.Debug|x64.Build.0 = Debug|x64
+		{3A3E6550-9522-4E6D-9904-1365185D3F01}.Release|ARM64.ActiveCfg = Release|x64
+		{3A3E6550-9522-4E6D-9904-1365185D3F01}.Release|ARM64.Build.0 = Release|x64
+		{3A3E6550-9522-4E6D-9904-1365185D3F01}.Release|x64.ActiveCfg = Release|x64
+		{3A3E6550-9522-4E6D-9904-1365185D3F01}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {14DBA246-426D-47FF-AE4E-3CD67FF12521}
+	EndGlobalSection
+EndGlobal
