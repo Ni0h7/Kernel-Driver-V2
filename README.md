@@ -1,6 +1,3 @@
-Here is a beautiful, professional, and structured `README.md` optimized for GitHub. It uses clear headers, syntax highlighting, alert blocks, and a clean layout.
-
----
 
 # 🌉 Shared Memory Kernel Bridge + CS2 Bhop Example
 
@@ -108,7 +105,7 @@ while (pMem->Status == 3) {
 
 I have provided the source code and the general steps. You are expected to have the prerequisite knowledge to compile and load the driver yourself.
 
-1. **Compile the Driver:** Build `Kernel.sys` (Release x64).
+1. **Compile the Driver:** Build `topg.sys` (Release x64).
 2. **Load the Driver:**
 * *Method A:* Use a manual mapper (e.g., `kdmapper`).
 * *Method B:* Enable Test Signing and use `sc start` (Not recommended for AC).
