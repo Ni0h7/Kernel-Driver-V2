@@ -124,5 +124,6 @@ I have provided the source code and the general steps. You are expected to have 
 
 * **Me** - Logic - Implementation
 * **UnknownCheats** - For the endless resources
+* https://www.unknowncheats.me/forum/c-and-c-/733619-kernel-driver-v2.html
 
 <p align="center">Made with ❤️ for the community</p>
