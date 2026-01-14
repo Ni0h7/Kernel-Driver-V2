@@ -122,7 +122,7 @@ I have provided the source code and the general steps. You are expected to have 
 
 **Credits:**
 
-* **Me** - Logic & Implementation
+* **Me** - Logic - Implementation
 * **UnknownCheats** - For the endless resources
 
 <p align="center">Made with ❤️ for the community</p>
